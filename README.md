@@ -122,6 +122,10 @@ class PersonSerializer < ApplicationSerializer::Base
 end
 ```
 
+## Testing
+
+TODO.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/Vandise/application_serializer. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
