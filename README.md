@@ -105,7 +105,7 @@ The context block expects an array of symbols to be returned, containing attribu
 class PersonSerializer < ApplicationSerializer::Base
   attributes :id # always include the id field with every serialization request
 
-  context :default do |scope, serializer|
+  context :default do
     [:name, :catch_phrase]
   end
 
@@ -115,7 +115,7 @@ class PersonSerializer < ApplicationSerializer::Base
 
   # Example:
   # return a hash containing a key => object.id, value => object.name to populate a select list
-  context :list do
+  context :list do |scope, serializer|
     serializer.attribute :id, key: :key
     serializer.attribute :name, key: :value
   end
