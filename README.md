@@ -1,5 +1,7 @@
 # ApplicationSerializer
 
+[![Application Serializer Test Suite](https://github.com/Vandise/application_serializer/actions/workflows/test_suite.yml/badge.svg)](https://github.com/Vandise/application_serializer/actions/workflows/test_suite.yml)
+
 ApplicationSerializer provides contextual serialization for ActiveModels. It preserves the original interface of <a href="https://github.com/rails-api/active_model_serializers" target="_blank">ActiveModelSerializers</a>, allowing flexibility with existing Serializers without polluting controllers with Adapter settings.
 
 ## Requirements
