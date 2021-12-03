@@ -71,7 +71,7 @@ class PersonController < ApplicationController
   # allow a ?context=value flag, fall back on the controller action
   ##
   def set_serialization_scope
-    { context: params[:context] || params[:action], user: current_user }
+    { context: (params[:context] || params[:action]).to_sym, user: current_user }
   end
 end
 ```
