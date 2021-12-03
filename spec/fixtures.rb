@@ -14,17 +14,17 @@ end
 class Person < ActiveRecord::Base; end;
 
 class PersonSerializer < ApplicationSerializer::Base
-  context :show do
-    [:id, :name, :catch_phrase]
+  context :show do |serialize|
+    serialize.attributes :id, :name, :catch_phrase
   end
 
-  context :list do |scope, serializer|
-    serializer.attribute :id, key: :key
-    serializer.attribute :name, key: :value
+  context :list do |serialize,scope|
+    serialize.attribute :id, key: :key
+    serialize.attribute :name, key: :value
   end
 
-  context :byline do
-    [:byline]
+  context :byline do |serialize|
+    serialize.attributes :byline
   end
 
   def byline

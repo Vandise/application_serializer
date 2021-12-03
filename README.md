@@ -96,35 +96,56 @@ end
 
 As defined, all contexts will **ALWAYS** include the **id**, **name**, and **catch_phrase** attributes of the model you're serializing. If you want to limit attributes based on scope, you must use the `context` block.
 
-#### context name\<symbol\>, block\<user\_defined\_scope, serializer\>
+#### context(name\<symbol\> &block\<serializer, user\_defined\_scope, model\>)
 
-The context block expects an array of symbols to be returned, containing attribute names, model associations, or serializer methods. Any other return types will be ignored. See <a href="https://github.com/rails-api/active_model_serializers" target="_blank">ActiveModelSerializers</a> for implementation details.
+The context block accepts a context name symbol and a block with 3 arguments: the serializer (to set attributes), the scope, and the model being serialized. See <a href="https://github.com/rails-api/active_model_serializers" target="_blank">ActiveModelSerializers</a> for implementation details.
 
 ```ruby
 # app/serializers/person_serializer.rb
 class PersonSerializer < ApplicationSerializer::Base
   attributes :id # always include the id field with every serialization request
 
-  context :default do
-    [:name, :catch_phrase]
+  context :default do |serialize|
+    serialize.attributes :name, :catch_phrase
   end
 
-  context :index do
-    [:name]
+  context :index do |serialize|
+    serialize.attributes :name
   end
 
   # Example:
   # return a hash containing a key => object.id, value => object.name to populate a select list
-  context :list do |scope, serializer|
-    serializer.attribute :id, key: :key
-    serializer.attribute :name, key: :value
+  context :list do |serialize,scope|
+    serialize.attribute :id, key: :key
+    serialize.attribute :name, key: :value
   end
 end
 ```
 
 ## Testing
 
-TODO.
+Serializers serving different contexts should always have supporting unit tests. The context and scope parameters are passed through the constructor of the serializer.
+
+```ruby
+require 'minitest/autorun'
+
+class TestPersonSerializer < MiniTest::Unit::TestCase
+  def setup
+    @model_attributes = {id: 1, name: 'Bender', catch_phrase: 'Bender is great'}
+    @person = Person.new(@model_attributes)
+  end
+
+  def test_default_context
+    json_string = PersonSerializer.new(@person, context: :default).to_json
+    assert_equal ({id: @model_attributes[:id]}.to_json), json_string
+  end
+
+  def test_list_context
+    json_string = PersonSerializer.new(@person, context: :list).to_json
+    assert_equal ({value: @model_attributes[:id], key: @model_attributes[:name]}.to_json), json_string
+  end
+end
+```
 
 ## Contributing
 

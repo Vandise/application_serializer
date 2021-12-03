@@ -15,8 +15,8 @@ RSpec.describe ApplicationSerializer::Base do
   describe 'when a context is not defined' do
     it 'returns the default context' do
       Ctx = Class.new(PersonSerializer) do
-        context :default do
-          [:id]
+        context :default do |serialize|
+          serialize.attributes :id
         end
       end
 
