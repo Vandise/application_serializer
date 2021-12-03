@@ -42,7 +42,7 @@ end
 
 The scope passed to the Serializer (accessible by the `scope` argument in the block) is defined in your controllers. This can be any object or value returned by the `serialization_scope` helper.
 
-This helper function must return a hash with a `context` attribute, `scope` is optional. The `context` attribute will trigger the appropriate context block defined in your Serializer. If the context is not defined, it defaults to the `default` context.
+This helper function must return a scope as a hash with the key `context` or an object that responds to a `context` method. The `context` attribute/method will trigger the appropriate context block defined in your Serializer. If the context is not defined, it defaults to the `default` context.
 
 ```ruby
 # app/controllers/people_controller.rb
@@ -71,7 +71,7 @@ class PersonController < ApplicationController
   # allow a ?context=value flag, fall back on the controller action
   ##
   def set_serialization_scope
-    { context: params[:context] || params[:action], scope: current_user }
+    { context: params[:context] || params[:action], user: current_user }
   end
 end
 ```
@@ -138,12 +138,12 @@ class TestPersonSerializer < MiniTest::Unit::TestCase
   end
 
   def test_default_context
-    json_string = PersonSerializer.new(@person, context: :default).to_json
+    json_string = PersonSerializer.new(@person, scope: { context: :default }).to_json
     assert_equal ({id: @model_attributes[:id]}.to_json), json_string
   end
 
   def test_list_context
-    json_string = PersonSerializer.new(@person, context: :list).to_json
+    json_string = PersonSerializer.new(@person, scope: { context: :list }).to_json
     assert_equal ({value: @model_attributes[:id], key: @model_attributes[:name]}.to_json), json_string
   end
 end

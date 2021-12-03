@@ -1,7 +1,7 @@
 module ApplicationSerializer
   class Base < ActiveModel::Serializer
     DEFAULT_CONTEXT = :default
-    DEFAULT_OPTIONS = { context: DEFAULT_CONTEXT, scope: nil }
+    DEFAULT_OPTIONS = { scope: nil }
 
     class << self
       @@contexts = {}
@@ -16,12 +16,21 @@ module ApplicationSerializer
 
     def initialize(model, options = {})
       options = DEFAULT_OPTIONS.merge(options)
-      ctx = context_defined?(options[:context]) ? options[:context] : DEFAULT_CONTEXT
+      requested_context = context_option(options[:scope])
+      ctx = context_defined?(requested_context) ? requested_context : DEFAULT_CONTEXT
       attrs = get_context(ctx).call(self.class, options[:scope], model)
+
       super(model, options)
     end
 
     protected
+
+    def context_option(scope)
+      return scope.send(:context) if scope.respond_to? :context
+      return scope.fetch(:context) if scope.respond_to? :fetch
+
+      DEFAULT_CONTEXT
+    end
 
     def context_defined?(ctx)
       @@contexts.key? ctx
