@@ -1,17 +1,25 @@
 module ApplicationSerializer
+
+  DEFAULT_CONTEXT_BLOCK = lambda { |_,_,_| [] }
+
   class Base < ActiveModel::Serializer
     DEFAULT_CONTEXT = :default
     DEFAULT_OPTIONS = { scope: nil }
 
+    @contexts = {}
+
     class << self
-      @@contexts = {}
-      def context(ctx, &block)
-        @@contexts[ctx] = block
-      end
+      attr_accessor :contexts
     end
 
-    context DEFAULT_CONTEXT do |serialize,scope|
-      serialize.attributes []
+    def self.context(name, &block)
+      @contexts[name] = block
+    end
+
+    def self.inherited(base)
+      super
+      base.contexts = {}
+      base.contexts[DEFAULT_CONTEXT] = ApplicationSerializer::DEFAULT_CONTEXT_BLOCK
     end
 
     def initialize(model, options = {})
@@ -33,11 +41,11 @@ module ApplicationSerializer
     end
 
     def context_defined?(ctx)
-      @@contexts.key? ctx
+      self.class.contexts.key? ctx
     end
 
     def get_context(ctx)
-      @@contexts[ctx]
+      self.class.contexts[ctx]
     end
   end
 end
