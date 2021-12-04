@@ -1,16 +1,6 @@
-
-#person = PersonSerializer.new(Person.new({id: 1, name: 'Bender', catch_phrase: 'Bender is great'}))
-#user = UserSerializer.new(User.new(name: 'test', email: 'test'))
-#exit
-
 RSpec.describe ApplicationSerializer::Base do
   let(:model_attributes) { ({id: 1, name: 'Bender', catch_phrase: 'Bender is great'}) }
   let!(:subject) { Person.new(model_attributes) }
-
-  before do
-    PersonSerializer._attributes_data = {}
-    UserSerializer._attributes_data = {}
-  end
 
   describe 'class inheritance' do
     it 'binds contexts to the child classes' do
@@ -19,6 +9,29 @@ RSpec.describe ApplicationSerializer::Base do
 
       expect(person.to_json).to eq(model_attributes.to_json)
       expect(user.to_json).to eq({id: 2, name: 'test', email: 'test'}.to_json)
+    end
+  end
+
+  describe 'caching' do
+    describe '.clear!' do
+      it 'clears the cache' do
+        PersonSerializer.new(Person.new(model_attributes))
+        PersonSerializer.context_cache.clear!
+        expect(PersonSerializer.context_cache.include? :default).to eq(false)
+      end
+    end
+
+    context 'when a context has not been called' do
+      it 'is not found in the cache' do
+        expect(PersonSerializer.context_cache.include? :default).to eq(false)
+      end
+    end
+
+    context 'when a context has been called' do
+      it 'is registered in the cache' do
+        PersonSerializer.new(Person.new(model_attributes))
+        expect(PersonSerializer.context_cache.include? :default).to eq(true)
+      end
     end
   end
 

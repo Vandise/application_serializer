@@ -124,6 +124,12 @@ class PersonSerializer < ApplicationSerializer::Base
 end
 ```
 
+## Caching
+
+Each serializer has a class-level attribute descriptor cache for each of the contexts you define. These are cached at run-time. 
+
+The cache for each serializer can be cleared by calling `YourSerializer.context_cache.clear!`
+
 ## Testing
 
 Serializers serving different contexts should always have supporting unit tests. The context and scope parameters are passed through the constructor of the serializer.

@@ -1,5 +1,6 @@
 require "active_model_serializers"
 require "application_serializer/version"
+require "application_serializer/cache"
 require "application_serializer/context"
 require "application_serializer/base"
 
