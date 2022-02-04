@@ -70,7 +70,7 @@ class PersonController < ApplicationController
   ##
   # allow a ?context=value flag, fall back on the controller action
   ##
-  def set_serialization_scope
+  def serialization_context
     { context: (params[:context] || params[:action]).to_sym, user: current_user }
   end
 end
@@ -96,7 +96,7 @@ class PersonSerializer < ApplicationSerializer::Base
 end
 ```
 
-As defined, all contexts will **ALWAYS** include the **id**, **name**, and **catch_phrase** attributes of the model you're serializing. If you want to limit attributes based on scope, you must use the `context` block.
+As defined, all contexts will include the **id**, **name**, and **catch_phrase** attributes of the model you're serializing regardless of context. If you want to limit attributes based on scope, you must use the `context` block.
 
 #### context(name\<symbol\> &block\<serializer, user\_defined\_scope, model\>)
 
@@ -105,8 +105,6 @@ The context block accepts a context name symbol and a block with 3 arguments: th
 ```ruby
 # app/serializers/person_serializer.rb
 class PersonSerializer < ApplicationSerializer::Base
-  attributes :id # always include the id field with every serialization request
-
   context :default do |serialize|
     serialize.attributes :name, :catch_phrase
   end
